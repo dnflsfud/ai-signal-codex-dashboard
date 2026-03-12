@@ -58,6 +58,7 @@ attr_summary = load_csv(REPORTS / 'lightgbm_attribution_overview.csv')
 month_attr = load_csv(REPORTS / 'lightgbm_monthly_category_attribution.csv', parse_dates=['date'])
 style_sector = load_csv(REPORTS / 'lightgbm_rebalance_style_sector_summary.csv', parse_dates=['date'])
 explanations = load_csv(REPORTS / 'lightgbm_monthly_ow_explanations.csv', parse_dates=['date'])
+uw_explanations = load_csv(REPORTS / 'lightgbm_monthly_uw_explanations.csv', parse_dates=['date'])
 
 metric_map = metrics.set_index('metric')['value']
 col1, col2, col3, col4 = st.columns(4)
@@ -71,7 +72,7 @@ daily['drawdown'] = daily['fund_cum_nav'] / daily['fund_cum_nav'].cummax() - 1.0
 daily['rolling_sharpe_63d'] = (daily['fund_daily_net_return'].rolling(63).mean() * 252.0) / (daily['fund_daily_net_return'].rolling(63).std(ddof=0) * np.sqrt(252.0))
 daily['rolling_active_return_63d'] = compounded_rolling(daily['active_daily_return'], 63)
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(['Daily Performance', 'Recent Weights', 'Model Structure', 'Attribution', 'Style/Sector Lens', 'OW Explanations'])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(['Daily Performance', 'Recent Weights', 'Model Structure', 'Attribution', 'Style/Sector Lens', 'OW Explanations', 'UW Explanations'])
 
 with tab1:
     st.subheader('Daily Fund vs Benchmark Performance')
@@ -126,3 +127,9 @@ with tab6:
     selected_month_expl = st.selectbox('Explanation month', sorted(explanations['date'].dt.strftime('%Y-%m-%d').unique(), reverse=True), key='expl')
     expl_df = explanations[explanations['date'].dt.strftime('%Y-%m-%d') == selected_month_expl].copy().sort_values('weight', ascending=False)
     st.dataframe(expl_df, use_container_width=True)
+
+with tab7:
+    st.subheader('Monthly Underweight Explanations')
+    selected_month_uw = st.selectbox('Explanation month', sorted(uw_explanations['date'].dt.strftime('%Y-%m-%d').unique(), reverse=True), key='uw_expl')
+    uw_df = uw_explanations[uw_explanations['date'].dt.strftime('%Y-%m-%d') == selected_month_uw].copy().sort_values('weight')
+    st.dataframe(uw_df, use_container_width=True)
