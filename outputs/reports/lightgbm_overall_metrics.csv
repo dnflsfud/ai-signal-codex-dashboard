@@ -1,0 +1,11 @@
+metric,value
+fund_total_return,0.4868585885384815
+fund_annualized_return,0.2560545706165005
+fund_annualized_vol,0.10983643865318098
+fund_sharpe,2.3312351871223465
+bm_total_return,0.2496438046575593
+bm_annualized_return,0.14920429434799992
+active_total_return,0.15667927642441293
+active_annualized_return,0.10685027626850055
+tracking_error,0.17400575305852306
+information_ratio,0.6140617444560226
