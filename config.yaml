@@ -1,0 +1,110 @@
+﻿project:
+  seed: 42
+  workbook_path: C:\Users\westl\PycharmProjects\pythonProject\venv_vf\machine\re_study\ai_signal_data.xlsx
+  outputs_dir: outputs
+
+data:
+  required_sheets:
+    - Universe_Meta
+    - BusinessDays
+    - PX_LAST
+    - BEST_EPS
+    - BEST_SALES
+    - BEST_PE_RATIO
+    - BEST_PEG_RATIO
+    - BEST_CALCULATED_FCF
+    - BEST_GROSS_MARGIN
+    - CUR_MKT_CAP
+    - OPER_MARGIN
+    - BEST_CAPEX
+    - BEST_ROE
+    - BEST_PX_BPS_RATIO
+    - BEST_EV_TO_BEST_EBITDA
+    - NEWS_SENTIMENT_DAILY_AVG
+    - EQY_REC_CONS
+    - Daily_Returns
+    - Sent_Trend_Momentum_Timeseries
+    - Sent_Trend_21d_Timeseries
+    - Factset_EPS_Revision
+    - Factset_Sales_Revision
+    - Factset_TG_Price
+    - Factor_PX_LAST
+  factor_return_sheet_candidates:
+    - Factor_Return
+    - Factor_Returns
+  sector_return_columns:
+    - SEC_InfoTech
+    - SEC_Health
+    - SEC_Financials
+    - SEC_ConsDisc
+    - SEC_ConsStap
+    - SEC_Energy
+    - SEC_Industrials
+    - SEC_Materials
+    - SEC_Utilities
+    - SEC_RealEstate
+    - SEC_CommSvc
+
+calendar:
+  canonical_sheet: BusinessDays
+  snapshot: month_end_business_day
+
+preprocessing:
+  synthetic_return_threshold: 1.0e-12
+  winsor_lower: 0.01
+  winsor_upper: 0.99
+  preserve_missing_until_monthly: true
+
+features:
+  expected_total_count: 126
+  expected_category_counts:
+    stock_price: 24
+    stock_sector_relative: 8
+    fundamental_valuation: 33
+    sentiment_analyst: 26
+    global_macro_factor: 23
+    global_sector_regime: 12
+
+models:
+  train_window_months: 120
+  validation_months: 20
+  random_validation_seed_offset: 1000
+  lasso_grid:
+    alpha: [0.0005, 0.001, 0.005]
+  lightgbm_grid:
+    learning_rate: [0.03, 0.05]
+    num_leaves: [15, 31]
+    min_data_in_leaf: [20, 40]
+    feature_fraction: [0.8]
+  ff_nn_grid:
+    hidden_dim: [32, 64]
+    dropout: [0.0, 0.1]
+    lr: [0.001]
+    weight_decay: [0.0001]
+    epochs: [100]
+  top_config_fraction: 0.2
+
+attribution:
+  grid_points: 50
+  background_rows: 32
+
+portfolio:
+  market_proxy_primary: MXWD
+  market_proxy_fallback: SPX
+  long_fraction: 0.10
+  short_fraction: 0.10
+  minimum_bucket_size: 3
+  target_annual_vol: 0.10
+  leverage_cap: 2.5
+  transaction_cost_bps_two_way: 10.0
+  beta_window_days: 126
+  vol_window_days: 63
+
+run:
+  stage: full
+  models:
+    - ols
+    - lasso
+    - lightgbm
+    - ffnn
+  smoke_months: 36
