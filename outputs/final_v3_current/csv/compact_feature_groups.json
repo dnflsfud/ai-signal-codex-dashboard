@@ -1,0 +1,54 @@
+{
+  "Accounting": [
+    "oper_margin_chg_63d",
+    "oper_margin_chg_252d",
+    "oper_margin_accel",
+    "cash_conversion_z",
+    "capex_intensity_z",
+    "op_leverage_63d",
+    "best_pe_ratio_level_z",
+    "best_peg_ratio_level_z",
+    "best_px_bps_ratio_level_z",
+    "roe_pe_z",
+    "fwd_eps_chg_252d"
+  ],
+  "Sellside": [
+    "analyst_rec_level",
+    "analyst_rec_stability",
+    "eps_rev_ma_10d",
+    "sales_rev_ma_10d",
+    "eps_rev_vol",
+    "sales_rev_vol",
+    "tg_mom_252d",
+    "tg_conviction"
+  ],
+  "Price": [
+    "ma_cross_50_200",
+    "ma_cross_21_50",
+    "beta_63d",
+    "realized_vol_126d",
+    "dist_52w_low",
+    "range_position_52w",
+    "max_ret_63d",
+    "min_ret_63d",
+    "idio_vol_63d"
+  ],
+  "Conditioning": [
+    "earn_cycle_pos",
+    "regime_avg_rec",
+    "regime_rev_breadth_eps"
+  ],
+  "Financials": [
+    "fin_roe_level_z",
+    "fin_roe_chg_63d",
+    "fin_roe_chg_252d",
+    "fin_pb_level_z",
+    "fin_pb_chg_63d",
+    "fin_pe_level_z",
+    "fin_pe_chg_63d",
+    "fin_roe_pb_gap",
+    "fin_roe_pe_gap",
+    "fin_eps_chg_252d",
+    "fin_sales_chg_252d"
+  ]
+}
