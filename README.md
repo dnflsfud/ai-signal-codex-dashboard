@@ -10,14 +10,6 @@ The app reads CSV artifacts under:
 outputs/final_v3_current/csv/
 ```
 
-Included tables:
-
-- portfolio and benchmark daily performance
-- yearly and recent-period performance
-- rebalance-date OW/UW active weights
-- precomputed feature diagnostics
-- precomputed OW stock feature score explanations
-
 The large `backtest_result_redesign.pkl` file is intentionally not committed.
 
 ## Local Run
