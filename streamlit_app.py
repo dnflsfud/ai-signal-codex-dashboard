@@ -110,7 +110,7 @@ def _display_table(
     for col in num_cols:
         if col in view.columns:
             view[col] = pd.to_numeric(view[col], errors="coerce").map(_format_num)
-    st.dataframe(view, use_container_width=True, height=height)
+    st.dataframe(view, width="stretch", height=height)
 
 
 def _read_date_csv(path: Path) -> pd.DataFrame:
@@ -697,7 +697,7 @@ tabs = st.tabs(["성과", "리밸런싱 OW/UW", "Feature 진단", "OW 점수"])
 
 with tabs[0]:
     st.subheader("성과")
-    st.plotly_chart(cumulative_figure(perf), use_container_width=True)
+    st.plotly_chart(cumulative_figure(perf), width="stretch")
 
     col_a, col_b = st.columns([1, 1])
     with col_a:
@@ -720,7 +720,7 @@ with tabs[0]:
         )
 
     st.markdown("#### Drawdown")
-    st.plotly_chart(drawdown_figure(perf), use_container_width=True)
+    st.plotly_chart(drawdown_figure(perf), width="stretch")
 
 with tabs[1]:
     st.subheader("리밸런싱 OW/UW")
@@ -734,7 +734,7 @@ with tabs[1]:
         if active_df.empty:
             st.info("선택한 기준을 넘는 OW/UW 종목이 없습니다.")
         else:
-            st.plotly_chart(active_weight_figure(active_df, top_n), use_container_width=True)
+            st.plotly_chart(active_weight_figure(active_df, top_n), width="stretch")
             col_ow, col_uw = st.columns(2)
             with col_ow:
                 st.markdown("#### OW")
@@ -765,7 +765,7 @@ with tabs[2]:
     if feature_df.empty:
         selected_view = pd.DataFrame({"feature": selected_features})
         selected_view["group"] = selected_view["feature"].map(feature_group_lookup(feature_groups)).fillna("Other")
-        st.dataframe(selected_view, use_container_width=True)
+        st.dataframe(selected_view, width="stretch")
     else:
         group_df = precomputed_group_df.copy()
         if group_df.empty:
@@ -792,7 +792,7 @@ with tabs[2]:
             )
             fig.update_layout(height=420, margin=dict(l=10, r=10, t=20, b=10))
             fig.update_xaxes(tickformat=".1%")
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width="stretch")
 
         view = feature_df.rename(
             columns={
