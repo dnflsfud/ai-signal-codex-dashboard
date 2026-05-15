@@ -667,6 +667,7 @@ perf = data["performance"]
 portfolio = data["portfolio_weights"]
 benchmark = data["benchmark_weights"]
 desired = data["desired_weights"]
+daily_weights = data["daily_weights"]
 selected_features = data["selected_features"]
 feature_groups = data["feature_groups"]
 precomputed_feature_df = data["feature_diagnostics"]
@@ -680,9 +681,19 @@ if perf.empty:
 pkl_path = run_dir / "backtest_result_redesign.pkl"
 result, pkl_error = load_backtest_result(str(pkl_path), snapshot)
 
-st.title("AI Signal Dashboard")
-st.caption(f"{run_dir} · {perf.index.max().strftime('%Y-%m-%d')}")
+latest_data_date = perf.index.max()
+latest_rebalance_date = portfolio.index.max() if not portfolio.empty else pd.NaT
+latest_rebalance_label = (
+    latest_rebalance_date.strftime("%Y-%m-%d")
+    if pd.notna(latest_rebalance_date)
+    else "-"
+)
 
+st.title("AI Signal Dashboard")
+st.caption(
+    f"{run_dir} | data latest {latest_data_date.strftime('%Y-%m-%d')} "
+    f"| latest rebalance {latest_rebalance_label}"
+)
 metrics = overall_metrics(perf)
 metric_cols = st.columns(4)
 metric_cols[0].metric("누적 수익률", _format_pct(metrics["fund_return"]), _format_pct(metrics["active_return"]))
@@ -723,6 +734,24 @@ with tabs[0]:
     st.plotly_chart(drawdown_figure(perf), width="stretch")
 
 with tabs[1]:
+    if pd.notna(latest_rebalance_date) and latest_rebalance_date < latest_data_date:
+        st.info(
+            "Performance data is current through "
+            f"{latest_data_date.strftime('%Y-%m-%d')}, while rebalance weights "
+            f"are from {latest_rebalance_label}. This is expected when the "
+            "latest data date is not a scheduled rebalance date."
+        )
+    if not daily_weights.empty:
+        latest_weight_date = daily_weights.index.max()
+        latest_daily = daily_weights.loc[latest_weight_date].dropna().sort_values(ascending=False)
+        st.markdown(f"#### Latest drifted weights ({latest_weight_date.strftime('%Y-%m-%d')})")
+        latest_daily_view = (
+            latest_daily.head(top_n)
+            .rename("Current Weight")
+            .reset_index()
+            .rename(columns={"index": "Ticker"})
+        )
+        _display_table(latest_daily_view, pct_cols=["Current Weight"], height=280)
     st.subheader("리밸런싱 OW/UW")
     rebal_dates = list(portfolio.index.sort_values(ascending=False))
     if not rebal_dates:
