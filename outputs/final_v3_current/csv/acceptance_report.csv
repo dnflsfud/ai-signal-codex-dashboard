@@ -1,0 +1,12 @@
+check,passed,severity,value,threshold,detail
+unmatured_label_train_violations,True,error,0,0,
+turnover_cap_violations,True,error,0,0,
+max_weight_sum_error,True,error,2.220446049250313e-16,1e-06,
+long_only,True,error,0.0,>= -1e-06,
+max_name_weight,True,error,0.14475560748674007,0.150001,
+pre_tradable_portfolio_weight_violations,True,error,0,0,
+pre_tradable_benchmark_weight_violations,True,error,0,0,
+tradable_weight_sum_error,True,error,4.440892098500626e-16,1e-06,
+dynamic_active_share_violations,False,warning,1,0,max_excess=0.00960621
+fallback_rate,True,warning,0.00%,<= 50.00%,"fallback_count=0, rebalance_count=94"
+latest_dates_recorded,True,warning,2026-05-20,non-empty,latest_return_date=2026-05-21
