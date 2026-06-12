@@ -5,12 +5,12 @@ model_freeze_consecutive_reuse,True,error,0,2,3+ consecutive reuses = model froz
 turnover_cap_violations,True,error,0,0,
 max_weight_sum_error,True,error,2.220446049250313e-16,1e-06,
 long_only,True,error,0.0,>= -1e-06,
-max_name_weight,True,error,0.13922011063582745,0.150001,
+max_name_weight,True,error,0.139378684711742,0.150001,
 pre_tradable_portfolio_weight_violations,True,error,0,0,
 pre_tradable_benchmark_weight_violations,True,error,0,0,
-tradable_weight_sum_error,True,error,3.3306690738754696e-16,1e-06,
+tradable_weight_sum_error,True,error,4.440892098500626e-16,1e-06,
 dynamic_active_share_violations,True,error,0,0,max_excess=0.00000000
 negative_signal_ow_violations,True,error,0,0,max_names=0
-hard_rule_turnover_overrides,True,warning,8,informational,max_forced_excess=0.01677418
-fallback_rate,True,warning,0.00%,<= 50.00%,"fallback_count=0, rebalance_count=94"
-latest_dates_recorded,True,warning,2026-05-22,non-empty,latest_return_date=2026-05-27
+hard_rule_turnover_overrides,True,warning,11,informational,max_forced_excess=0.03393848
+fallback_rate,True,warning,1.06%,<= 50.00%,"fallback_count=1, rebalance_count=94"
+latest_dates_recorded,True,warning,2026-05-22,non-empty,latest_return_date=2026-06-11
