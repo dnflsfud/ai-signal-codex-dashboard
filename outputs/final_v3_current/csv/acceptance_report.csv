@@ -1,14 +1,16 @@
 check,passed,severity,value,threshold,detail
 unmatured_label_train_violations,True,error,0,0,
+model_reuse_rate,True,warning,0.00%,<= 25.00%,"reuse_count=0, retrain_count=32"
+model_freeze_consecutive_reuse,True,error,0,2,3+ consecutive reuses = model frozen 6+ months
 turnover_cap_violations,True,error,0,0,
-max_weight_sum_error,True,error,1.1102230246251565e-16,1e-06,
+max_weight_sum_error,True,error,2.220446049250313e-16,1e-06,
 long_only,True,error,0.0,>= -1e-06,
-max_name_weight,True,error,0.14024042585456784,0.150001,
+max_name_weight,True,error,0.13922011063582745,0.150001,
 pre_tradable_portfolio_weight_violations,True,error,0,0,
 pre_tradable_benchmark_weight_violations,True,error,0,0,
-tradable_weight_sum_error,True,error,2.220446049250313e-16,1e-06,
+tradable_weight_sum_error,True,error,3.3306690738754696e-16,1e-06,
 dynamic_active_share_violations,True,error,0,0,max_excess=0.00000000
 negative_signal_ow_violations,True,error,0,0,max_names=0
-hard_rule_turnover_overrides,True,warning,10,informational,max_forced_excess=0.01946202
+hard_rule_turnover_overrides,True,warning,8,informational,max_forced_excess=0.01677418
 fallback_rate,True,warning,0.00%,<= 50.00%,"fallback_count=0, rebalance_count=94"
-latest_dates_recorded,True,warning,2026-05-22,non-empty,latest_return_date=2026-06-05
+latest_dates_recorded,True,warning,2026-05-22,non-empty,latest_return_date=2026-05-27

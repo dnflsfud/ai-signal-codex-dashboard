@@ -1,4 +1,4 @@
-﻿# AI Signal Codex Dashboard
+# AI Signal Codex Dashboard
 
 Streamlit dashboard for the `final_v3_current` AI Signal portfolio results.
 
