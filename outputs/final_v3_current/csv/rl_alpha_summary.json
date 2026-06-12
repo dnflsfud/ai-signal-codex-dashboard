@@ -1,14 +1,3 @@
 {
-  "enabled": true,
-  "n_eval_dates": 1947,
-  "sufficient_sample": true,
-  "min_eval_dates": 30,
-  "base_mean_ic": 0.022245386647195883,
-  "rl_mean_ic": 0.027526407201714124,
-  "delta_mean_ic": 0.005281020554518244,
-  "base_proxy_ir": 0.4198927455727161,
-  "rl_proxy_ir": 0.42708680159633006,
-  "delta_proxy_active_return_mean": 1.3691805415552396e-05,
-  "delta_proxy_active_return_tstat": 0.26736562254789314,
-  "delta_proxy_active_return_pvalue": 0.7892159974432488
+  "enabled": false
 }

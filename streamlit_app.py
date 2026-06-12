@@ -170,6 +170,9 @@ def load_run_data(run_dir_str: str, snapshot: float) -> Dict[str, object]:
         "feature_diagnostics": "feature_diagnostics.csv",
         "feature_group_diagnostics": "feature_group_diagnostics.csv",
         "ow_feature_scores": "ow_feature_scores.csv",
+        "recent_ow_3m": "recent_ow_3m.csv",
+        "recent_uw_3m": "recent_uw_3m.csv",
+        "rl_alpha_fold_diagnostics": "rl_alpha_fold_diagnostics.csv",
     }.items():
         path = csv_dir / name
         if path.exists():
@@ -192,6 +195,12 @@ def load_run_data(run_dir_str: str, snapshot: float) -> Dict[str, object]:
         data["feature_groups"] = json.loads(groups_path.read_text(encoding="utf-8"))
     else:
         data["feature_groups"] = {}
+
+    rl_summary_path = csv_dir / "rl_alpha_summary.json"
+    if rl_summary_path.exists():
+        data["rl_alpha_summary"] = json.loads(rl_summary_path.read_text(encoding="utf-8"))
+    else:
+        data["rl_alpha_summary"] = {}
 
     data["snapshot"] = snapshot
     return data
@@ -673,6 +682,10 @@ feature_groups = data["feature_groups"]
 precomputed_feature_df = data["feature_diagnostics"]
 precomputed_group_df = data["feature_group_diagnostics"]
 precomputed_ow_scores = data["ow_feature_scores"]
+recent_ow_3m = data["recent_ow_3m"]
+recent_uw_3m = data["recent_uw_3m"]
+rl_alpha_summary = data["rl_alpha_summary"]
+rl_alpha_fold_diagnostics = data["rl_alpha_fold_diagnostics"]
 
 if perf.empty:
     st.error("daily_performance.csv가 비어 있습니다.")
@@ -704,7 +717,7 @@ metric_cols[3].metric("MDD", _format_pct(metrics["max_drawdown"]))
 if pkl_error:
     st.warning(f"pkl 분석 로드 실패: {pkl_error}")
 
-tabs = st.tabs(["성과", "리밸런싱 OW/UW", "Feature 진단", "OW 점수"])
+tabs = st.tabs(["성과", "리밸런싱 OW/UW", "강화학습 진단", "Feature 진단", "OW 점수"])
 
 with tabs[0]:
     st.subheader("성과")
@@ -787,6 +800,106 @@ with tabs[1]:
             )
 
 with tabs[2]:
+    st.subheader("강화학습 진단")
+    if not rl_alpha_summary:
+        st.info("rl_alpha_summary.json을 찾지 못했습니다.")
+    else:
+        summary_cols = st.columns(4)
+        summary_cols[0].metric("DR-alpha", "ON" if rl_alpha_summary.get("enabled") else "OFF")
+        summary_cols[1].metric("평가일 수", int(rl_alpha_summary.get("n_eval_dates", 0) or 0))
+        summary_cols[2].metric("IC 개선", _format_num(rl_alpha_summary.get("delta_mean_ic", np.nan)))
+        summary_cols[3].metric("Proxy t-stat", _format_num(rl_alpha_summary.get("delta_proxy_active_return_tstat", np.nan)))
+
+        detail = pd.DataFrame(
+            [
+                {
+                    "Base Mean IC": rl_alpha_summary.get("base_mean_ic", np.nan),
+                    "RL Mean IC": rl_alpha_summary.get("rl_mean_ic", np.nan),
+                    "Base Proxy IR": rl_alpha_summary.get("base_proxy_ir", np.nan),
+                    "RL Proxy IR": rl_alpha_summary.get("rl_proxy_ir", np.nan),
+                    "p-value": rl_alpha_summary.get("delta_proxy_active_return_pvalue", np.nan),
+                    "Sufficient Sample": rl_alpha_summary.get("sufficient_sample", False),
+                }
+            ]
+        )
+        _display_table(
+            detail,
+            num_cols=["Base Mean IC", "RL Mean IC", "Base Proxy IR", "RL Proxy IR", "p-value"],
+            height=80,
+        )
+
+    st.markdown("#### 최근 3개월 OW")
+    if recent_ow_3m.empty:
+        st.info("recent_ow_3m.csv를 찾지 못했습니다.")
+    else:
+        ow_view = recent_ow_3m.copy()
+        if "latest_active_weight" in ow_view.columns:
+            ow_view = ow_view.sort_values("latest_active_weight", ascending=False)
+        keep_cols = [
+            "ticker",
+            "ow_count",
+            "rebalance_count",
+            "ow_ratio",
+            "latest_portfolio_weight",
+            "latest_benchmark_weight",
+            "latest_active_weight",
+            "avg_active_weight",
+            "persistent_ow",
+        ]
+        ow_view = ow_view[[col for col in keep_cols if col in ow_view.columns]].head(top_n)
+        ow_view = ow_view.rename(
+            columns={
+                "ticker": "Ticker",
+                "ow_count": "OW Count",
+                "rebalance_count": "Rebalance Count",
+                "ow_ratio": "OW Ratio",
+                "latest_portfolio_weight": "Latest Portfolio",
+                "latest_benchmark_weight": "Latest BM",
+                "latest_active_weight": "Latest Active",
+                "avg_active_weight": "Avg Active",
+                "persistent_ow": "Persistent OW",
+            }
+        )
+        _display_table(
+            ow_view,
+            pct_cols=["OW Ratio", "Latest Portfolio", "Latest BM", "Latest Active", "Avg Active"],
+            height=360,
+        )
+
+    if not rl_alpha_fold_diagnostics.empty:
+        st.markdown("#### Fold diagnostics")
+        fold_view = rl_alpha_fold_diagnostics.copy()
+        if "fold_start" in fold_view.columns:
+            fold_view["fold_start"] = pd.to_datetime(fold_view["fold_start"], errors="coerce")
+            fold_view = fold_view.sort_values("fold_start", ascending=False)
+        keep_cols = [
+            "fold_start",
+            "trained",
+            "reason",
+            "n_train_dates",
+            "n_val_dates",
+            "changed_cells",
+            "anchor_guarded_cells",
+            "val_sharpe",
+            "train_sharpe",
+            "epochs",
+        ]
+        fold_view = fold_view[[col for col in keep_cols if col in fold_view.columns]].head(20)
+        _display_table(
+            fold_view,
+            num_cols=[
+                "n_train_dates",
+                "n_val_dates",
+                "changed_cells",
+                "anchor_guarded_cells",
+                "val_sharpe",
+                "train_sharpe",
+                "epochs",
+            ],
+            height=430,
+        )
+
+with tabs[3]:
     st.subheader("Feature 진단")
     feature_df = precomputed_feature_df.copy()
     if feature_df.empty:
@@ -843,7 +956,7 @@ with tabs[2]:
             height=520,
         )
 
-with tabs[3]:
+with tabs[4]:
     st.subheader("OW 점수")
     rebal_dates = list(portfolio.index.sort_values(ascending=False))
     if not rebal_dates:
